@@ -2,7 +2,7 @@ export const config = {
   maxDuration: 60
 };
 
-const model = process.env.OPENAI_MODEL || "gpt-5.5";
+const model = process.env.OPENAI_MODEL || "gpt-4.1-mini";
 
 const analysisSchema = {
   type: "object",
@@ -12,7 +12,7 @@ const analysisSchema = {
     summary: { type: "string" },
     timeline: {
       type: "array",
-      maxItems: 6,
+      maxItems: 4,
       items: {
         type: "object",
         additionalProperties: false,
@@ -27,7 +27,7 @@ const analysisSchema = {
     },
     fiveWhys: {
       type: "array",
-      maxItems: 3,
+      maxItems: 2,
       items: {
         type: "object",
         additionalProperties: false,
@@ -56,7 +56,7 @@ const analysisSchema = {
     },
     evidenceRegister: {
       type: "array",
-      maxItems: 8,
+      maxItems: 5,
       items: {
         type: "object",
         additionalProperties: false,
@@ -71,7 +71,7 @@ const analysisSchema = {
     },
     followUpQuestions: {
       type: "array",
-      maxItems: 6,
+      maxItems: 4,
       items: {
         type: "object",
         additionalProperties: false,
@@ -84,7 +84,7 @@ const analysisSchema = {
     },
     barrierAnalysis: {
       type: "array",
-      maxItems: 8,
+      maxItems: 5,
       items: {
         type: "object",
         additionalProperties: false,
@@ -100,7 +100,7 @@ const analysisSchema = {
     },
     systemicCauses: {
       type: "array",
-      maxItems: 5,
+      maxItems: 3,
       items: {
         type: "object",
         additionalProperties: false,
@@ -115,7 +115,7 @@ const analysisSchema = {
     },
     rootCauses: {
       type: "array",
-      maxItems: 5,
+      maxItems: 3,
       items: {
         type: "object",
         additionalProperties: false,
@@ -137,7 +137,7 @@ const analysisSchema = {
         topEvent: { type: "string" },
         branches: {
           type: "array",
-          maxItems: 5,
+          maxItems: 3,
           items: {
             type: "object",
             additionalProperties: false,
@@ -147,7 +147,7 @@ const analysisSchema = {
               rootCause: { type: "string" },
               contributingFactors: {
                 type: "array",
-                maxItems: 4,
+                maxItems: 3,
                 items: { type: "string" }
               }
             }
@@ -157,7 +157,7 @@ const analysisSchema = {
     },
     improvementActions: {
       type: "array",
-      maxItems: 8,
+      maxItems: 5,
       items: {
         type: "object",
         additionalProperties: false,
@@ -174,7 +174,7 @@ const analysisSchema = {
     },
     limitations: {
       type: "array",
-      maxItems: 5,
+      maxItems: 3,
       items: { type: "string" }
     }
   }
@@ -214,6 +214,7 @@ export default async function handler(req, res) {
             ]
           }
         ],
+        max_output_tokens: 3500,
         text: {
           format: {
             type: "json_schema",
@@ -281,7 +282,7 @@ function buildInstructions(language = "en") {
     "Build a fault tree connecting the undesired event, barriers, contributing factors, and root causes.",
     "Prioritize strong actions using the hierarchy of controls: elimination, substitution, engineering control, administrative control, and PPE.",
     "Actions must be verifiable and connected to a cause, with control hierarchy level, priority, suggested owner, and verification criterion.",
-    "Include follow-up questions only when necessary to mitigate the case or reduce relevant uncertainty."
+    "Be concise. Keep each field short and useful. Include follow-up questions only when necessary to mitigate the case or reduce relevant uncertainty."
   ].join(" ");
 }
 
