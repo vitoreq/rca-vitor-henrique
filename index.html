@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Análise de Acidentes e Incidentes</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="sidebar" aria-label="Navegação da análise">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img">
+              <path d="M12 3 3.8 6.7v5.6c0 4.8 3.4 7.8 8.2 9 4.8-1.2 8.2-4.2 8.2-9V6.7L12 3Z"></path>
+              <path d="m8.8 12.1 2 2 4.7-5"></path>
+            </svg>
+          </div>
+          <div>
+            <h1>RCA Vitor Henrique</h1>
+            <p>www.vitorhenrique.eng.br</p>
+          </div>
+        </div>
+
+        <nav class="step-list" aria-label="Etapas">
+          <a href="#ocorrido" class="step-link active">Ocorrido</a>
+          <a href="#testemunhas" class="step-link">Testemunhas</a>
+          <a href="#perguntas" class="step-link">Perguntas</a>
+          <a href="#resultado" class="step-link">Resultado</a>
+        </nav>
+
+        <div class="status-panel">
+          <span class="status-label">Completude</span>
+          <div class="progress-track">
+            <span id="progressBar"></span>
+          </div>
+          <strong id="progressText">0%</strong>
+        </div>
+      </aside>
+
+      <section class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Investigação estruturada</p>
+            <h2>Analise barreiras, causas sistêmicas, evidências e ações de controle.</h2>
+          </div>
+          <div class="topbar-actions">
+            <div class="language-switcher" aria-label="Language">
+              <button class="language-button active" type="button" data-lang="en">EN</button>
+              <button class="language-button" type="button" data-lang="es">ES</button>
+              <button class="language-button" type="button" data-lang="pt">PT</button>
+            </div>
+            <span class="api-status" id="apiStatus">Modo local</span>
+            <button class="ghost-button" id="exampleBtn" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18"></path><path d="M17 8H9.5a3.5 3.5 0 0 0 0 7H14a3 3 0 0 1 0 6H6"></path></svg>
+              Gerar exemplo
+            </button>
+            <button class="icon-button" id="clearBtn" type="button" title="Limpar análise" aria-label="Limpar análise">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="m19 6-1 14H6L5 6"></path><path d="M10 11v5"></path><path d="M14 11v5"></path></svg>
+            </button>
+          </div>
+        </header>
+
+        <form id="rcaForm" class="analysis-grid">
+          <section class="panel wide" id="ocorrido">
+            <div class="panel-heading">
+              <div>
+                <span class="section-number">01</span>
+                <h3>Informações do ocorrido</h3>
+              </div>
+              <span class="badge">Obrigatório</span>
+            </div>
+
+            <div class="field-grid">
+              <label>
+                Tipo
+                <select id="eventType">
+                  <option value="Acidente">Acidente</option>
+                  <option value="Incidente">Incidente</option>
+                  <option value="Quase acidente">Quase acidente</option>
+                  <option value="Condição insegura">Condição insegura</option>
+                </select>
+              </label>
+              <label>
+                Data
+                <input id="eventDate" type="date">
+              </label>
+              <label>
+                Área
+                <input id="area" type="text" placeholder="Ex.: manutenção, produção, almoxarifado">
+              </label>
+              <label>
+                Severidade potencial
+                <select id="severity">
+                  <option value="Baixa">Baixa</option>
+                  <option value="Média">Média</option>
+                  <option value="Alta">Alta</option>
+                  <option value="Crítica">Crítica</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="stacked">
+              Descrição detalhada
+              <textarea id="description" rows="7" placeholder="Descreva o que aconteceu, atividade em execução, pessoas envolvidas, equipamento, ambiente, energia perigosa, lesão ou dano e sequência dos fatos."></textarea>
+            </label>
+
+            <div class="field-grid">
+              <label>
+                Atividade executada
+                <input id="activity" type="text" placeholder="Ex.: troca de correia, içamento, limpeza técnica">
+              </label>
+              <label>
+                Equipamento ou local
+                <input id="equipment" type="text" placeholder="Ex.: prensa, ponte rolante, plataforma">
+              </label>
+              <label>
+                Houve lesão?
+                <select id="injury">
+                  <option value="Não informado">Não informado</option>
+                  <option value="Não">Não</option>
+                  <option value="Sim, leve">Sim, leve</option>
+                  <option value="Sim, grave">Sim, grave</option>
+                  <option value="Fatalidade">Fatalidade</option>
+                </select>
+              </label>
+              <label>
+                Controle existente
+                <input id="controls" type="text" placeholder="Ex.: APR, bloqueio, proteção fixa, permissão">
+              </label>
+            </div>
+          </section>
+
+          <section class="panel wide" id="testemunhas">
+            <div class="panel-heading">
+              <div>
+                <span class="section-number">02</span>
+                <h3>Depoimentos</h3>
+              </div>
+              <button class="ghost-button" id="addWitnessBtn" type="button">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+                Adicionar
+              </button>
+            </div>
+            <div id="witnessList" class="witness-list"></div>
+            <div class="flow-actions">
+              <button class="primary-button" id="analyzeBtn" type="button">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5V7a2 2 0 0 1 2-2h4l2 2h6a2 2 0 0 1 2 2v10.5"></path><path d="M8 13h8"></path><path d="M8 17h5"></path></svg>
+                Analisar
+              </button>
+            </div>
+          </section>
+
+          <section class="panel wide" id="perguntas">
+            <div class="panel-heading">
+              <div>
+                <span class="section-number">03</span>
+                <h3>Perguntas de mitigação</h3>
+              </div>
+              <span id="questionCount" class="badge muted">0 pendentes</span>
+            </div>
+            <div id="questionsList" class="questions-list empty-state">
+              Preencha as informações e clique em Analisar.
+            </div>
+            <div class="flow-actions">
+              <button class="primary-button hidden" id="refineBtn" type="button">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"></path><path d="M21 3v6h-6"></path></svg>
+                Refinar análise
+              </button>
+            </div>
+          </section>
+
+          <section class="panel wide result-panel" id="resultado">
+            <div class="panel-heading">
+              <div>
+                <span class="section-number">04</span>
+                <h3>Resultado da análise</h3>
+              </div>
+              <button class="ghost-button" id="copyBtn" type="button">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"></rect><rect x="2" y="2" width="13" height="13" rx="2"></rect></svg>
+                Copiar
+              </button>
+            </div>
+
+            <div class="result-tabs" role="tablist" aria-label="Visualizações do resultado">
+              <button class="tab-button active" type="button" data-tab="timelineTab">Linha do tempo</button>
+              <button class="tab-button" type="button" data-tab="fiveWhysTab">5 Porquês</button>
+              <button class="tab-button" type="button" data-tab="faultTab">Árvore de falhas</button>
+              <button class="tab-button" type="button" data-tab="bowtieTab">BowTie</button>
+              <button class="tab-button" type="button" data-tab="ishikawaTab">Ishikawa</button>
+            </div>
+
+            <div class="result-layout">
+              <section class="tab-panel active" id="timelineTab">
+                <h4>Linha do tempo</h4>
+                <div id="timelineView" class="timeline-view empty-state">A linha do tempo será gerada após a análise.</div>
+              </section>
+              <section class="tab-panel" id="fiveWhysTab">
+                <h4>5 Porquês</h4>
+                <div id="fiveWhysView" class="five-whys-view empty-state">Os 5 Porquês serão gerados após a análise.</div>
+              </section>
+              <section class="tab-panel" id="faultTab">
+                <h4>Árvore de falhas</h4>
+                <div id="faultTree" class="fault-tree empty-state">A árvore será gerada após a análise.</div>
+              </section>
+              <section class="tab-panel" id="bowtieTab">
+                <h4>BowTie</h4>
+                <div id="bowtieDiagram" class="bowtie-diagram empty-state">O BowTie será gerado após a análise.</div>
+              </section>
+              <section class="tab-panel" id="ishikawaTab">
+                <h4>Ishikawa</h4>
+                <div id="ishikawaDiagram" class="ishikawa-diagram empty-state">O Ishikawa será gerado após a análise.</div>
+              </section>
+              <div>
+                <h4>Causas raiz prováveis</h4>
+                <ol id="rootCauses" class="result-list"></ol>
+                <h4>Barreiras e evidências</h4>
+                <ol id="barriers" class="result-list"></ol>
+                <h4>Causas sistêmicas</h4>
+                <ol id="systemicCauses" class="result-list"></ol>
+                <h4>Ações de melhoria</h4>
+                <ol id="actions" class="result-list actions"></ol>
+              </div>
+            </div>
+            <div class="report-actions">
+              <button class="ghost-button" id="docxBtn" type="button">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"></path><path d="M14 2v6h6"></path><path d="M9 15h6"></path><path d="M9 18h6"></path><path d="M9 12h1"></path></svg>
+                Imprimir Word
+              </button>
+              <button class="ghost-button" id="pdfBtn" type="button">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v15H6z"></path><path d="M14 2v6h6"></path><path d="M9 13h6"></path><path d="M9 17h6"></path></svg>
+                Imprimir PDF
+              </button>
+            </div>
+          </section>
+        </form>
+      </section>
+    </main>
+
+    <template id="witnessTemplate">
+      <article class="witness-entry">
+        <div class="field-grid compact">
+          <label>
+            Nome
+            <input class="witness-name" type="text" placeholder="Nome da testemunha">
+          </label>
+          <label>
+            Função
+            <input class="witness-role" type="text" placeholder="Ex.: operador, técnico, líder">
+          </label>
+        </div>
+        <label class="stacked">
+          Depoimento
+          <textarea class="witness-statement" rows="4" placeholder="Registre fatos observados, horários, condições, desvios percebidos e controles usados."></textarea>
+        </label>
+        <button class="remove-witness" type="button" aria-label="Remover testemunha">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+        </button>
+      </article>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>
