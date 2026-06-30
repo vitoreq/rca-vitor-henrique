@@ -106,6 +106,14 @@ const i18n = {
     , notGeneratedSystemic: "Systemic causes not generated yet."
     , notGeneratedActions: "Actions not generated yet."
     , reportNote: "Report generated automatically from the provided information. The investigation must be validated by a technical responsible person before closure."
+    , generatedAt: "Generated at"
+    , noWitnesses: "No witness statement recorded."
+    , notInformed: "Not informed"
+    , bowtieSummary: "BowTie summary"
+    , ishikawaSummary: "Ishikawa summary"
+    , noDiagram: "Diagram not generated yet."
+    , notGeneratedTimeline: "Timeline not generated yet."
+    , notGeneratedFiveWhys: "5 Whys not generated yet."
   },
   es: {
     apiLocal: "Modo local",
@@ -185,6 +193,14 @@ const i18n = {
     , notGeneratedSystemic: "Causas sistémicas aún no generadas."
     , notGeneratedActions: "Acciones aún no generadas."
     , reportNote: "Informe generado automáticamente a partir de la información proporcionada. La investigación debe ser validada por un responsable técnico antes del cierre."
+    , generatedAt: "Generado el"
+    , noWitnesses: "No se registró ninguna declaración de testigo."
+    , notInformed: "No informado"
+    , bowtieSummary: "Resumen BowTie"
+    , ishikawaSummary: "Resumen Ishikawa"
+    , noDiagram: "Diagrama aún no generado."
+    , notGeneratedTimeline: "Línea de tiempo aún no generada."
+    , notGeneratedFiveWhys: "5 Porqués aún no generados."
   },
   pt: {
     apiLocal: "Modo local",
@@ -264,6 +280,14 @@ const i18n = {
     , notGeneratedSystemic: "Causas sistêmicas ainda não geradas."
     , notGeneratedActions: "Ações ainda não geradas."
     , reportNote: "Relatório gerado automaticamente a partir das informações fornecidas. A investigação deve ser validada por responsável técnico antes do encerramento."
+    , generatedAt: "Gerado em"
+    , noWitnesses: "Nenhum depoimento registrado."
+    , notInformed: "Não informado"
+    , bowtieSummary: "Resumo BowTie"
+    , ishikawaSummary: "Resumo Ishikawa"
+    , noDiagram: "Diagrama ainda não gerado."
+    , notGeneratedTimeline: "Linha do tempo ainda não gerada."
+    , notGeneratedFiveWhys: "5 Porquês ainda não gerados."
   }
 };
 
@@ -1132,6 +1156,8 @@ function buildReportText() {
   const actionItems = [...actions.querySelectorAll("li")].map((li) => li.textContent);
   const timelineItems = [...timelineView.querySelectorAll(".timeline-item")].map((item) => item.textContent.trim().replace(/\s+/g, " "));
   const fiveWhysItems = [...fiveWhysView.querySelectorAll(".why-card")].map((item) => item.textContent.trim().replace(/\s+/g, " "));
+  const bowtieText = bowtieDiagram.textContent.trim().replace(/\s+/g, " ");
+  const ishikawaText = ishikawaDiagram.textContent.trim().replace(/\s+/g, " ");
   const questions = [...questionsList.querySelectorAll(".question-item strong")].map((item) => item.textContent);
 
   return [
@@ -1160,6 +1186,12 @@ function buildReportText() {
     "",
     `${t("fiveWhys")}:`,
     ...(fiveWhysItems.length ? fiveWhysItems.map((item, index) => `${index + 1}. ${item}`) : ["Análise ainda não gerada."]),
+    "",
+    `${t("bowtieSummary")}:`,
+    bowtieText || t("noDiagram"),
+    "",
+    `${t("ishikawaSummary")}:`,
+    ishikawaText || t("noDiagram"),
     "",
     `${t("rootCauses")}:`,
     ...(causes.length ? causes.map((cause, index) => `${index + 1}. ${cause}`) : ["Análise ainda não gerada."]),
@@ -1192,7 +1224,9 @@ function buildReportData() {
     barrierItems: [...barriers.querySelectorAll("li")].map((li) => li.textContent),
     systemicItems: [...systemicCauses.querySelectorAll("li")].map((li) => li.textContent),
     actionItems: [...actions.querySelectorAll("li")].map((li) => li.textContent),
-    treeText: faultTree.textContent.trim()
+    treeText: faultTree.textContent.trim(),
+    bowtieText: bowtieDiagram.textContent.trim(),
+    ishikawaText: ishikawaDiagram.textContent.trim()
   };
 }
 
@@ -1233,7 +1267,7 @@ async function generatePdfReport() {
 function buildPrintableReport(report) {
   const { data } = report;
   return `<!doctype html>
-  <html lang="pt-BR">
+  <html lang="${escapeHtml(document.documentElement.lang || "en")}">
     <head>
       <meta charset="utf-8">
       <title>${escapeHtml(reportTitle())}</title>
@@ -1253,7 +1287,7 @@ function buildPrintableReport(report) {
     </head>
     <body>
       <h1>${escapeHtml(reportTitle())}</h1>
-      <p class="meta">Gerado em ${escapeHtml(report.generatedAt)} | ${escapeHtml(report.apiStatus)}</p>
+      <p class="meta">${escapeHtml(t("generatedAt"))}: ${escapeHtml(report.generatedAt)} | ${escapeHtml(report.apiStatus)}</p>
       <h2>1. ${escapeHtml(currentLanguage === "en" ? "Identification" : currentLanguage === "es" ? "Identificación" : "Identificação")}</h2>
       <table><tbody>
         ${printRow(t("type"), data.eventType)}
@@ -1266,25 +1300,30 @@ function buildPrintableReport(report) {
         ${printRow(t("controls"), data.controls || "-")}
       </tbody></table>
       <h2>2. ${escapeHtml(t("description"))}</h2>
-      <p>${escapeHtml(data.description || "Não informada")}</p>
+      <p>${escapeHtml(data.description || t("notInformed"))}</p>
       <h2>3. ${escapeHtml(t("witness"))}</h2>
       ${printWitnesses(data.witnesses)}
       <h2>4. ${escapeHtml(t("questions"))}</h2>
-      ${report.questions.length ? printQuestions(report.questions) : "<p>Nenhuma pergunta complementar registrada.</p>"}
+      ${report.questions.length ? printQuestions(report.questions) : `<p>${escapeHtml(t("noQuestions"))}</p>`}
       <h2>5. ${escapeHtml(t("timeline"))}</h2>
-      ${report.timelineItems.length ? listItems(report.timelineItems) : "<p>Linha do tempo ainda não gerada.</p>"}
+      ${report.timelineItems.length ? listItems(report.timelineItems) : `<p>${escapeHtml(t("notGeneratedTimeline"))}</p>`}
       <h2>6. ${escapeHtml(t("fiveWhys"))}</h2>
-      ${report.fiveWhysItems.length ? listItems(report.fiveWhysItems) : "<p>5 Porquês ainda não gerados.</p>"}
+      ${report.fiveWhysItems.length ? listItems(report.fiveWhysItems) : `<p>${escapeHtml(t("notGeneratedFiveWhys"))}</p>`}
       <h2>7. ${escapeHtml(t("faultTree"))}</h2>
-      <div class="fault-tree">${escapeHtml(report.treeText || "Árvore ainda não gerada.")}</div>
-      <h2>8. ${escapeHtml(t("rootCauses"))}</h2>
+      <div class="fault-tree">${escapeHtml(report.treeText || t("emptyFault"))}</div>
+      <h2>8. ${escapeHtml(t("bowtieSummary"))}</h2>
+      <div class="fault-tree">${escapeHtml(report.bowtieText || t("noDiagram"))}</div>
+      <h2>9. ${escapeHtml(t("ishikawaSummary"))}</h2>
+      <div class="fault-tree">${escapeHtml(report.ishikawaText || t("noDiagram"))}</div>
+      <h2>10. ${escapeHtml(t("rootCauses"))}</h2>
       ${report.causes.length ? listItems(report.causes) : `<p>${escapeHtml(t("notGeneratedCauses"))}</p>`}
-      <h2>9. ${escapeHtml(t("barriers"))}</h2>
+      <h2>11. ${escapeHtml(t("barriers"))}</h2>
       ${report.barrierItems.length ? listItems(report.barrierItems) : `<p>${escapeHtml(t("notGeneratedBarriers"))}</p>`}
-      <h2>10. ${escapeHtml(t("systemic"))}</h2>
+      <h2>12. ${escapeHtml(t("systemic"))}</h2>
       ${report.systemicItems.length ? listItems(report.systemicItems) : `<p>${escapeHtml(t("notGeneratedSystemic"))}</p>`}
-      <h2>11. ${escapeHtml(t("actions"))}</h2>
+      <h2>13. ${escapeHtml(t("actions"))}</h2>
       ${report.actionItems.length ? listItems(report.actionItems) : `<p>${escapeHtml(t("notGeneratedActions"))}</p>`}
+      <p class="meta">${escapeHtml(t("reportNote"))}</p>
     </body>
   </html>`;
 }
@@ -1301,9 +1340,9 @@ function printRow(label, value) {
 
 function printWitnesses(witnesses) {
   if (!witnesses.length) {
-    return "<p>Nenhum depoimento registrado.</p>";
+    return `<p>${escapeHtml(t("noWitnesses"))}</p>`;
   }
-  return `<table><thead><tr><th>Nome</th><th>Função</th><th>Depoimento</th></tr></thead><tbody>${witnesses.map((witness) => `<tr><td>${escapeHtml(witness.name || "Não informado")}</td><td>${escapeHtml(witness.role || "Não informada")}</td><td>${escapeHtml(witness.statement || "Sem depoimento")}</td></tr>`).join("")}</tbody></table>`;
+  return `<table><thead><tr><th>${escapeHtml(t("name"))}</th><th>${escapeHtml(t("role"))}</th><th>${escapeHtml(t("statement"))}</th></tr></thead><tbody>${witnesses.map((witness) => `<tr><td>${escapeHtml(witness.name || t("notInformed"))}</td><td>${escapeHtml(witness.role || t("notInformed"))}</td><td>${escapeHtml(witness.statement || t("notInformed"))}</td></tr>`).join("")}</tbody></table>`;
 }
 
 function printQuestions(questions) {
@@ -1340,42 +1379,46 @@ function buildDocumentXml(report) {
   const witnessRows = data.witnesses.length
     ? data.witnesses.map((witness, index) => tableRow([
       String(index + 1),
-      witness.name || "Não informado",
-      witness.role || "Não informada",
-      witness.statement || "Sem depoimento"
+      witness.name || t("notInformed"),
+      witness.role || t("notInformed"),
+      witness.statement || t("notInformed")
     ])).join("")
-    : tableRow(["-", "Nenhum depoimento registrado.", "", ""]);
+    : tableRow(["-", t("noWitnesses"), "", ""]);
 
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
   <w:body>
     ${paragraph(reportTitle(), "Title")}
     ${paragraph(currentLanguage === "en" ? "Occupational safety accident/incident analysis" : currentLanguage === "es" ? "Análisis de accidente/incidente de seguridad laboral" : "Análise de acidente/incidente de segurança do trabalho", "Subtitle")}
-    ${paragraph(`Gerado em ${report.generatedAt} | ${report.apiStatus}`, "Small")}
+    ${paragraph(`${t("generatedAt")}: ${report.generatedAt} | ${report.apiStatus}`, "Small")}
     ${heading(`1. ${currentLanguage === "en" ? "Occurrence Identification" : currentLanguage === "es" ? "Identificación del Suceso" : "Identificação do Ocorrido"}`)}
     ${keyValueTable(fields)}
     ${heading(`2. ${currentLanguage === "en" ? "Event Description" : currentLanguage === "es" ? "Descripción del Evento" : "Descrição do Evento"}`)}
-    ${paragraph(data.description || "Não informada")}
+    ${paragraph(data.description || t("notInformed"))}
     ${heading(`3. ${t("witness")}`)}
     ${table([
-      tableRow(["#", "Nome", "Função", "Depoimento"], true),
+      tableRow(["#", t("name"), t("role"), t("statement")], true),
       witnessRows
     ].join(""))}
     ${heading(`4. ${t("questions")}`)}
-    ${report.questions.length ? numberedParagraphs(report.questions.map(formatQuestion)) : paragraph("Nenhuma pergunta complementar registrada.")}
+    ${report.questions.length ? numberedParagraphs(report.questions.map(formatQuestion)) : paragraph(t("noQuestions"))}
     ${heading(`5. ${t("timeline")}`)}
-    ${report.timelineItems.length ? numberedParagraphs(report.timelineItems) : paragraph("Linha do tempo ainda não gerada.")}
+    ${report.timelineItems.length ? numberedParagraphs(report.timelineItems) : paragraph(t("notGeneratedTimeline"))}
     ${heading(`6. ${t("fiveWhys")}`)}
-    ${report.fiveWhysItems.length ? numberedParagraphs(report.fiveWhysItems) : paragraph("5 Porquês ainda não gerados.")}
+    ${report.fiveWhysItems.length ? numberedParagraphs(report.fiveWhysItems) : paragraph(t("notGeneratedFiveWhys"))}
     ${heading(`7. ${t("faultTree")}`)}
     ${paragraph(report.treeText || t("emptyFault"))}
-    ${heading(`8. ${t("rootCauses")}`)}
+    ${heading(`8. ${t("bowtieSummary")}`)}
+    ${paragraph(report.bowtieText || t("noDiagram"))}
+    ${heading(`9. ${t("ishikawaSummary")}`)}
+    ${paragraph(report.ishikawaText || t("noDiagram"))}
+    ${heading(`10. ${t("rootCauses")}`)}
     ${report.causes.length ? numberedParagraphs(report.causes) : paragraph(t("notGeneratedCauses"))}
-    ${heading(`9. ${t("barriers")}`)}
+    ${heading(`11. ${t("barriers")}`)}
     ${report.barrierItems.length ? numberedParagraphs(report.barrierItems) : paragraph(t("notGeneratedBarriers"))}
-    ${heading(`10. ${t("systemic")}`)}
+    ${heading(`12. ${t("systemic")}`)}
     ${report.systemicItems.length ? numberedParagraphs(report.systemicItems) : paragraph(t("notGeneratedSystemic"))}
-    ${heading(`11. ${t("actions")}`)}
+    ${heading(`13. ${t("actions")}`)}
     ${report.actionItems.length ? numberedParagraphs(report.actionItems) : paragraph(t("notGeneratedActions"))}
     ${paragraph(t("reportNote"), "Small")}
     <w:sectPr>
