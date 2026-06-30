@@ -1003,7 +1003,13 @@ async function requestAiAnalysis(data) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
   });
-  const payload = await response.json();
+  const raw = await response.text();
+  let payload;
+  try {
+    payload = raw ? JSON.parse(raw) : {};
+  } catch {
+    throw new Error(`API returned non-JSON response (${response.status}): ${raw.slice(0, 180)}`);
+  }
   if (!response.ok) {
     throw new Error(payload.error || "OpenAI analysis failed");
   }
