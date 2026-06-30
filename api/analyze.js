@@ -12,6 +12,7 @@ const analysisSchema = {
     summary: { type: "string" },
     timeline: {
       type: "array",
+      maxItems: 6,
       items: {
         type: "object",
         additionalProperties: false,
@@ -26,6 +27,7 @@ const analysisSchema = {
     },
     fiveWhys: {
       type: "array",
+      maxItems: 3,
       items: {
         type: "object",
         additionalProperties: false,
@@ -34,6 +36,7 @@ const analysisSchema = {
           problem: { type: "string" },
           whys: {
             type: "array",
+            maxItems: 5,
             items: {
               type: "object",
               additionalProperties: false,
@@ -53,6 +56,7 @@ const analysisSchema = {
     },
     evidenceRegister: {
       type: "array",
+      maxItems: 8,
       items: {
         type: "object",
         additionalProperties: false,
@@ -67,6 +71,7 @@ const analysisSchema = {
     },
     followUpQuestions: {
       type: "array",
+      maxItems: 6,
       items: {
         type: "object",
         additionalProperties: false,
@@ -79,6 +84,7 @@ const analysisSchema = {
     },
     barrierAnalysis: {
       type: "array",
+      maxItems: 8,
       items: {
         type: "object",
         additionalProperties: false,
@@ -94,6 +100,7 @@ const analysisSchema = {
     },
     systemicCauses: {
       type: "array",
+      maxItems: 5,
       items: {
         type: "object",
         additionalProperties: false,
@@ -108,6 +115,7 @@ const analysisSchema = {
     },
     rootCauses: {
       type: "array",
+      maxItems: 5,
       items: {
         type: "object",
         additionalProperties: false,
@@ -129,6 +137,7 @@ const analysisSchema = {
         topEvent: { type: "string" },
         branches: {
           type: "array",
+          maxItems: 5,
           items: {
             type: "object",
             additionalProperties: false,
@@ -138,6 +147,7 @@ const analysisSchema = {
               rootCause: { type: "string" },
               contributingFactors: {
                 type: "array",
+                maxItems: 4,
                 items: { type: "string" }
               }
             }
@@ -147,6 +157,7 @@ const analysisSchema = {
     },
     improvementActions: {
       type: "array",
+      maxItems: 8,
       items: {
         type: "object",
         additionalProperties: false,
@@ -163,6 +174,7 @@ const analysisSchema = {
     },
     limitations: {
       type: "array",
+      maxItems: 5,
       items: { type: "string" }
     }
   }
